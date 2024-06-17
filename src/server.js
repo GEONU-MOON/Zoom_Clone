@@ -1,12 +1,21 @@
 import express from "express";
+import SocketIO from "socket.io";
+import http from "http";
 
 const app = express();
 
 app.set("view engine", "pug");
 app.set("views", __dirname + "/views");
 app.use("/public", express.static(__dirname + "/public"));
-
 app.get("/", (req, res) => res.render("home"));
+app.get("/*", (req, res) => res.redirect("/"));
+
+const httpServer = http.createServer(app);
+const wsServer = SocketIO(httpServer);
+
+wsServer.on("connection", (socket) => {
+  console.log(socket);
+});
 
 const hadleListen = () => console.log("Listening on http://localhost:3000");
-app.listen(3000, hadleListen);
+httpServer.listen(3000, hadleListen);
